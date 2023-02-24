@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
     variables_map variablesMap;
     store(parse_command_line(argc, argv, description), variablesMap);
     notify(variablesMap);
+
     if (variablesMap.count("help")) {
         std::cout << description << std::endl;
     } else if (variablesMap.count("version")) {
@@ -19,6 +20,7 @@ int main(int argc, char **argv) {
     } else {
         std::cout << description << std::endl;
     }
+
 	return 0;
 }
 
