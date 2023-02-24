@@ -7,7 +7,10 @@ int main(int argc, char **argv) {
     options_description description(CMD_CAPTION);
     description.add_options()
             ("help,H", "show help")
-            ("version,v", "version");
+            ("version,v", "version")
+            ("user,u", "mysql user name(required)")
+            ("host,h", "mysql host(required)")
+            ("password,p", "mysql user password");
 
     variables_map variablesMap;
     store(parse_command_line(argc, argv, description), variablesMap);
