@@ -1,5 +1,6 @@
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <mysql/jdbc.h>
 #include "cmd.hpp"
 
 int main(int argc, char **argv) {
@@ -21,6 +22,7 @@ int main(int argc, char **argv) {
     } else if (variablesMap.count("version")) {
         std::cout << VERSION << std::endl;
     } else {
+        std::cout << MYSQL_CONCPP_VERSION_NUMBER << std::endl;
         std::cout << description << std::endl;
     }
 
