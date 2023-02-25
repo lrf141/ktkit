@@ -11,7 +11,8 @@ int main(int argc, char **argv) {
             ("version,v", "version")
             ("user,u", "mysql user name(required)")
             ("host,h", "mysql host(required)")
-            ("password,p", "mysql user password");
+            ("password,p", "mysql user password")
+            ("port,P", "mysql port number");
 
     variables_map variablesMap;
     store(parse_command_line(argc, argv, description), variablesMap);
