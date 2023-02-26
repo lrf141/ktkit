@@ -1,7 +1,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
-#include <boost/format.hpp>
 #include "cmd.hpp"
+#include "util.hpp"
 
 int main(int argc, char **argv) {
     using namespace boost::program_options;
@@ -36,8 +36,7 @@ int main(int argc, char **argv) {
         const std::string port = variablesMap["port"].as<std::string>();
         const std::string host = variablesMap["host"].as<std::string>();
         const std::string pass = variablesMap["password"].as<std::string>();
-        const boost::basic_format<char> formatted_url = boost::format(MYSQLX_URL_FMT) % user % host % port;
-        const std::string url = formatted_url.str();
+        const std::string url = util::Util::createMySQLUrl(user, host, port);
         std::cout << url << std::endl;
     } catch (const boost::bad_any_cast& e) {
         std::cout << e.what() << std::endl;

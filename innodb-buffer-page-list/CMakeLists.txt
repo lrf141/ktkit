@@ -9,3 +9,5 @@ target_include_directories(kt-innodb-buffer-page-list PRIVATE ${Boost_INCLUDE_DI
 target_link_libraries(kt-innodb-buffer-page-list ${Boost_LIBRARIES})
 target_include_directories(kt-innodb-buffer-page-list PRIVATE /usr/local/lib/mysql-connector-cpp-8-0-30/include)
 target_link_libraries(kt-innodb-buffer-page-list /usr/local/lib/mysql-connector-cpp-8-0-30/lib64/libmysqlcppconn.so)
+target_include_directories(kt-innodb-buffer-page-list PRIVATE ${CMAKE_SOURCE_DIR}/libs/include)
+target_link_libraries(kt-innodb-buffer-page-list ktkit)
