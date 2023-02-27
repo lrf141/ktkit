@@ -13,13 +13,16 @@ namespace myconn {
     private:
         static mysqlx::SessionSettings createSessionSettings(
                 const std::string& user, const std::string& pass,
-                const unsigned int port, const std::string& host, const std::string& db
+                unsigned int port, const std::string& host, const std::string& db
         );
+
+        static mysqlx::Client createClient(
+		const std::string& user, const std::string& pass,
+		unsigned int port, const std::string& host, const std::string& db
+        	);
     public:
-        static mysqlx::Session createSession(
-                const std::string& user, const std::string& pass,
-                const unsigned int port, const std::string& host, const std::string& db
-                );
+        mysqlx::Session createSession(mysqlx::Client client);
+        mysqlx::Session createSession(mysqlx::SessionSettings sessionSettings);
     };
 }
 
