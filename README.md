@@ -2,8 +2,14 @@
 kentsu no tool-kit
 
 ## Resolve dependency
+### Ubuntu
 ```
 $ sudo apt install libboost-dev libboost-program-options-dev
+```
+
+### macOS
+```
+$ brew install boost
 ```
 
 ## Download Connector/C++
