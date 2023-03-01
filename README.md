@@ -12,11 +12,13 @@ $ sudo apt install libboost-dev libboost-program-options-dev
 $ brew install boost
 ```
 
-## Download Connector/C++
+### Download mysql-community-client-plugin
+[Official mysql-community-client-plugin Download site](https://dev.mysql.com/downloads/mysql/5.5.html?os=31&version=5.1)
+
+### Download Connector/C++
 
 [Official MySQL Connector/C++ Download site](https://downloads.mysql.com/archives/c-cpp/)  
-Download and move to /usr/local/lib.
-
+Warning: download and install all packages
 ## How to build
 ```
 $ mkdir build && cd $_
