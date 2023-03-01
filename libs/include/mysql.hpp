@@ -10,7 +10,7 @@
 
 namespace myconn {
     class MySQL {
-    private:
+    public:
         static mysqlx::SessionSettings createSessionSettings(
                 const std::string& user, const std::string& pass,
                 unsigned int port, const std::string& host, const std::string& db
@@ -20,7 +20,6 @@ namespace myconn {
 		const std::string& user, const std::string& pass,
 		unsigned int port, const std::string& host, const std::string& db
         	);
-    public:
         mysqlx::Session createSession(mysqlx::Client client);
         mysqlx::Session createSession(mysqlx::SessionSettings sessionSettings);
     };

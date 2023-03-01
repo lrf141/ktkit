@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 
 project("ktkit - kentsu tool kit" VERSION 0.0.1)
 
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_COMPILER "/usr/bin/g++" CACHE STRING "gnu c++ compiler" FORCE)
 set(CMAKE_C_COMPILER "/usr/bin/gcc" CACHE STRING "gnu cc compiler" FORCE)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O3")

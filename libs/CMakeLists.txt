@@ -4,18 +4,19 @@ project("ktkit-libs" VERSION 0.0.1)
 
 FILE(GLOB ktkit_libs_src "include/*.hpp" "*.cpp")
 
+set(MYSQL_CONNECTOR_CPP_DIR "/usr/local/lib/mysql-connector-cpp-8-0-30")
+
 add_library(ktkit STATIC ${ktkit_libs_src})
+
+find_library(
+        MYSQL_CONN_CPP_LIB
+        NAMES mysqlcppconn8 libmysqlconncpp8
+        HINTS "${MYSQL_CONNECTOR_CPP_DIR}/lib64"
+        NO_DEFAULT_PATH
+)
+
+link_libraries(${MYSQL_CONNECTOR_CPP_DIR}/lib64)
+target_include_directories(ktkit PUBLIC ${MYSQL_CONNECTOR_CPP_DIR}/include)
+target_link_libraries(ktkit ${MYSQL_CONN_CPP_LIB})
 target_include_directories(ktkit PRIVATE ${Boost_INCLUDE_DIR})
 target_link_libraries(ktkit ${Boost_LIBRARIES})
-target_include_directories(ktkit PRIVATE /usr/local/lib/mysql-connector-cpp-8-0-30/include)
-if (UNIX AND NOT APPLE)
-    message("shared object selected")
-    target_link_libraries(ktkit /usr/local/lib/mysql-connector-cpp-8-0-30/lib64/libmysqlcppconn.so)
-elseif (UNIX AND APPLE)
-    message("dynamic library selected")
-    target_link_libraries(ktkit /usr/local/lib/mysql-connector-cpp-8-0-30/lib64/libmysqlcppconn.dylib)
-else()
-    message("shared object selected because does not use unix or apple")
-    target_link_libraries(ktkit /usr/local/lib/mysql-connector-cpp-8-0-30/lib64/libmysqlcppconn.so)
-endif()
-

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include "cmd.hpp"
-#include "util.hpp"
+#include "mysql.hpp"
 
 int main(int argc, char **argv) {
     using namespace boost::program_options;
@@ -38,6 +38,9 @@ int main(int argc, char **argv) {
         const std::string host = variablesMap["host"].as<std::string>();
         const std::string pass = variablesMap["password"].as<std::string>();
         const std::string database = variablesMap["database"].as<std::string>();
+
+        mysqlx::SessionSettings sessionSettings = myconn::MySQL::createSessionSettings(user, pass, port, host, database);
+        mysqlx::Session session(sessionSettings);
     } catch (const boost::bad_any_cast& e) {
         std::cout << e.what() << std::endl;
         return 1;
