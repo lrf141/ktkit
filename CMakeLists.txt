@@ -18,7 +18,10 @@ find_library(
         HINTS "${MYSQL_CONNECTOR_CPP_DIR}"
         NO_DEFAULT_PATH
 )
-message("mysql connector libs - ${MYSQL_CONN_CPP_LIBS}")
+message("-- mysql connector libs - ${MYSQL_CONN_CPP_LIBS}")
+
+set(KTKIT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/libs/include)
+message("-- ktkit include dir - ${KTKIT_INCLUDE_DIR}")
 
 add_subdirectory(libs)
 add_subdirectory(innodb-buffer-page-list)
