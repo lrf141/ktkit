@@ -12,7 +12,6 @@ find_library(
 )
 
 add_executable(kt-innodb-buffer-page-list ${innodb_buffer_page_list_src})
-message("Build Dir - ${CMAKE_BINARY_DIR}")
 
 include_directories(${CMAKE_SOURCE_DIR}/libs/include)
 include_directories(${MYSQL_CONNECTOR_CPP_DIR}/include)
