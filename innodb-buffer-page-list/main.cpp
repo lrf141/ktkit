@@ -17,6 +17,11 @@ int main(int argc, char **argv) {
 
     variables_map variablesMap;
     try {
+        basic_parsed_options<char> basic_parsed_options = parse_command_line(argc, argv, description);
+        if (basic_parsed_options.options.empty()) {
+            std::cout << description << std::endl;
+            return 0;
+        }
         store(parse_command_line(argc, argv, description), variablesMap);
     } catch (const error_with_option_name& e) {
         std::cout << e.what() << std::endl;
