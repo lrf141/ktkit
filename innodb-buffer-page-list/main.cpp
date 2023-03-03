@@ -49,8 +49,8 @@ int main(int argc, char **argv) {
     }
 
     try {
-        mysqlx::Client client = config->createClient();
-        mysqlx::Session session(client);
+        mysqlx::SessionSettings sessionSettings = config->createSessionSettings();
+        mysqlx::Session session(sessionSettings);
     } catch (const error& e) {
         std::cout << e.what() << std::endl;
         return 1;

@@ -6,8 +6,8 @@
 namespace myconn {
 
     mysqlx::SessionSettings Util::createSessionSettings(const std::string &user, const std::string &pass,
-                                                         const unsigned int port, const std::string &host,
-                                                         const std::string &db) {
+                                                        const std::string &host, const unsigned int port,
+                                                        const std::string &db) {
         mysqlx::SessionSettings sessionSettings = mysqlx::SessionSettings(host, port, user, pass, db);
         return sessionSettings;
     }
@@ -44,5 +44,9 @@ namespace myconn {
 
     mysqlx::Client Config::createClient() {
         return Util::createClient(user, pass, host, port, database);
+    }
+
+    mysqlx::SessionSettings Config::createSessionSettings() {
+        return Util::createSessionSettings(user, pass, host, port, database);
     }
 }

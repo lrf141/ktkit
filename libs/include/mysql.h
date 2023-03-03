@@ -13,7 +13,7 @@ namespace myconn {
     public:
         static mysqlx::SessionSettings createSessionSettings(
                 const std::string& user, const std::string& pass,
-                unsigned int port, const std::string& host, const std::string& db
+                const std::string& host, unsigned int port, const std::string& db
         );
 
         static mysqlx::Client createClient(
@@ -34,6 +34,7 @@ namespace myconn {
     public:
         Config(std::string, unsigned int, std::string, std::string, std::string);
         mysqlx::Client createClient();
+        mysqlx::SessionSettings createSessionSettings();
     };
 }
 
