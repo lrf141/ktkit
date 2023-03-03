@@ -2,8 +2,8 @@
 // Created by lrf141 on 23/02/27.
 //
 
-#ifndef KTKIT_KENTSU_TOOL_KIT_UTIL_HPP
-#define KTKIT_KENTSU_TOOL_KIT_UTIL_HPP
+#ifndef KTKIT_KENTSU_TOOL_KIT_UTIL_H
+#define KTKIT_KENTSU_TOOL_KIT_UTIL_H
 
 #include <iostream>
 
@@ -17,4 +17,4 @@ namespace util {
 }
 
 
-#endif //KTKIT_KENTSU_TOOL_KIT_UTIL_HPP
+#endif //KTKIT_KENTSU_TOOL_KIT_UTIL_H

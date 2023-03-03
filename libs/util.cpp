@@ -2,7 +2,7 @@
 // Created by lrf141 on 23/02/27.
 //
 #include <boost/format.hpp>
-#include "include/util.hpp"
+#include "include/util.h"
 
 namespace util {
     std::string Util::createMySQLUrl(std::string user, std::string host, std::string port) {

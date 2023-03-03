@@ -1,6 +1,6 @@
 #include <iostream>
 #include <boost/program_options.hpp>
-#include "cmd.hpp"
+#include "cmd.h"
 #include "mysql.hpp"
 
 int main(int argc, char **argv) {

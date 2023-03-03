@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 
 project(innodb_buffer_page_list VERSION 0.0.1)
 
-file(GLOB innodb_buffer_page_list_src "*.hpp" "*.cpp")
+file(GLOB innodb_buffer_page_list_src "*.h" "*.cpp")
 
 add_executable(kt-innodb-buffer-page-list ${innodb_buffer_page_list_src})
 
