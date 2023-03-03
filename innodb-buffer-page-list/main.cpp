@@ -1,12 +1,13 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include "cmd.h"
+#include "main.h"
 #include "mysql.hpp"
 
 int main(int argc, char **argv) {
     using namespace boost::program_options;
-    options_description description(CMD_CAPTION);
-    description.add_options()
+    cmd::Command command(CMD_CAPTION);
+    command.add_options()
             ("help,H", "show help")
             ("version,v", "version")
             ("user,u", value<std::string>(),"mysql user name (required)")
@@ -14,29 +15,24 @@ int main(int argc, char **argv) {
             ("host,h", value<std::string>()->default_value(DEFAULT_HOST), "mysql host (optional)")
             ("port,P", value<unsigned int>()->default_value(DEFAULT_PORT),"mysql port number (optional)")
             ("database,D", value<std::string>()->default_value(""), "mysql database name (optional)");
-
-    variables_map variablesMap;
     try {
-        basic_parsed_options<char> basic_parsed_options = parse_command_line(argc, argv, description);
-        if (basic_parsed_options.options.empty()) {
-            std::cout << description << std::endl;
-            return 0;
-        }
-        store(parse_command_line(argc, argv, description), variablesMap);
+        command.parseCommandLineOptions(argc, argv);
     } catch (const error_with_option_name& e) {
         std::cout << e.what() << std::endl;
-        return 1;
+        return -1;
     }
-    notify(variablesMap);
 
-    if (variablesMap.count("help")) {
-        std::cout << description << std::endl;
+    if (command.isEmptyOptions() || command.contains("help")) {
+        std::cout << command.getOptionsDescription() << std::endl;
         return 0;
-    } else if (variablesMap.count("version")) {
+    }
+
+    if (command.contains("version")) {
         std::cout << VERSION << std::endl;
         return 0;
     }
 
+    variables_map variablesMap = command.getVariablesMap();
     try {
         const std::string user = variablesMap["user"].as<std::string>();
         const unsigned int port = variablesMap["port"].as<unsigned int>();
