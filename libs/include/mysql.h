@@ -5,11 +5,17 @@
 #ifndef KTKIT_KENTSU_TOOL_KIT_MYSQL_H
 #define KTKIT_KENTSU_TOOL_KIT_MYSQL_H
 
+#define I_S "information_schema"
+#define INNODB_BUFFER_PAGE "INNODB_BUFFER_PAGE"
+#define SELECT_ALL_FORMAT "SELECT * FROM %s"
+
 #include <iostream>
 #include <mysqlx/xdevapi.h>
 
 namespace myconn {
     class Util {
+    private:
+        Util();
     public:
         static mysqlx::SessionSettings createSessionSettings(
                 const std::string& user, const std::string& pass,
@@ -22,6 +28,8 @@ namespace myconn {
         	);
         mysqlx::Session createSession(mysqlx::Client client);
         mysqlx::Session createSession(mysqlx::SessionSettings sessionSettings);
+
+        static std::string createSelectAllQuery(std::string);
     };
 
     class Config {
@@ -35,6 +43,7 @@ namespace myconn {
         Config(std::string, unsigned int, std::string, std::string, std::string);
         mysqlx::Client createClient();
         mysqlx::SessionSettings createSessionSettings();
+        std::string getDatabase();
     };
 }
 
