@@ -4,6 +4,7 @@
 #include "cmd.h"
 #include "main.h"
 #include "mysql.h"
+#include "innodb_buffer_page.h"
 
 int main(int argc, char **argv) {
     using namespace boost::program_options;
@@ -51,28 +52,29 @@ int main(int argc, char **argv) {
         mysqlx::SessionSettings sessionSettings = config->createSessionSettings();
         mysqlx::Session session(sessionSettings);
         mysqlx::Table table = session.getSchema(config->getDatabase(), true).getTable(INNODB_BUFFER_PAGE);
-        mysqlx::TableSelect tableSelect = table.select().limit(10);
+        mysqlx::TableSelect tableSelect = table.select();
         mysqlx::RowResult rowResult = tableSelect.execute();
+        std::vector<idb_buffer_page::InnoDBBufferPage> innodbBufferPages;
+        unsigned long int rowCount = 0;
+        unsigned long int numberRecords = 0;
+        unsigned long int dataFreePageCount = 0;
         for (auto row : rowResult) {
             unsigned long int colCount = row.colCount();
+            idb_buffer_page::InnoDBBufferPage innoDbBufferPage;
             for (int j = 0; j < colCount; j++) {
                 mysqlx::Value value = row.get(j);
-                mysqlx::Value::Type valueType = value.getType();
-                switch (valueType) {
-                    case mysqlx::Value::Type::INT64:
-                        std::cout << value.operator int64_t() << std::endl;
-                        break;
-                    case mysqlx::Value::Type::UINT64:
-                        std::cout << value.operator uint64_t() << std::endl;
-                        break;
-                    case mysqlx::Value::Type::VNULL:
-                        break;
-                    default:
-                        std::cout << "default" << std::endl;
-                        break;
-                }
+                std::string columnName = rowResult.getColumn(j).getColumnName();
+                innoDbBufferPage.convert(value, columnName);
+            }
+            rowCount++;
+            numberRecords += innoDbBufferPage.getNumberRecords();
+            if (innoDbBufferPage.getDataSize() == 0) {
+                dataFreePageCount++;
             }
         }
+        std::cout << "Total pages: " << rowCount << std::endl;
+        std::cout << "Total number records: " << numberRecords << std::endl;
+        std::cout << "Total data free pages: " << dataFreePageCount << std::endl;
     } catch (const mysqlx::Error &err) {
         std::cout << "MySQL Error: " << err << std::endl;
         return 1;
