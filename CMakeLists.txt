@@ -10,8 +10,18 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -std=c++11")
 
 find_package(Boost 1.74 COMPONENTS program_options REQUIRED)
 
-set(MYSQL_CONNECTOR_CPP_DIR "/usr/lib/x86_64-linux-gnu")
-set(MYSQL_CONNECTOR_INCLUDE_DIR "/usr/include/mysql-cppconn-8")
+if (UNIX AND NOT APPLE)
+    set(MYSQL_CONNECTOR_CPP_DIR "/usr/lib/x86_64-linux-gnu")
+    set(MYSQL_CONNECTOR_INCLUDE_DIR "/usr/include/mysql-cppconn-8")
+elseif (APPLE)
+    set(MYSQL_CONNECTOR_CPP_DIR "/usr/local/lib/mysql-connector-cpp-8-0-30/lib64")
+    set(MYSQL_CONNECTOR_INCLUDE_DIR "/usr/local/lib/mysql-connector-cpp-8-0-30/include")
+else()
+    message("-- not supported os")
+    set(MYSQL_CONNECTOR_CPP_DIR "/usr/lib/x86_64-linux-gnu")
+    set(MYSQL_CONNECTOR_INCLUDE_DIR "/usr/include/mysql-cppconn-8")
+endif()
+
 find_library(
         MYSQL_CONN_CPP_LIBS
         NAMES mysqlcppconn8 libmysqlconncpp8
