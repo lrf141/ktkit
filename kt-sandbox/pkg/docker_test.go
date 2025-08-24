@@ -23,7 +23,7 @@ var _ = Describe("Docker suite", func() {
 	var containerId string
 	var networkId string
 
-	BeforeSuite(func() {
+	It("Init Docker suite", func() {
 		ctx = context.Background()
 		err := exec.Command("which", "docker").Run()
 		if err != nil {
