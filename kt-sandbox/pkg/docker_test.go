@@ -92,6 +92,11 @@ var _ = Describe("Docker suite", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
+	It("Wait Container", func() {
+		err := sut.WaitContainerUp(ctx, containerId, "mysqld is alive", []string{"/bin/sh", "-c", "mysqladmin ping -uroot -proot"})
+		Expect(err).NotTo(HaveOccurred())
+	})
+
 	It("Cleanup docker resource", func() {
 		// Exercise
 		err := sut.StopContainer(ctx, containerId)

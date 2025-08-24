@@ -133,26 +133,6 @@ func (d *DockerManager) StartContainer(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-
-	maxWait := 10 * time.Second
-	interval := 1 * time.Second
-	deadline := time.Now().Add(maxWait)
-	for {
-		result, err := d.ExecAttachContainer(ctx, id, []string{"/bin/sh", "-c", "mysqladmin ping -uroot -proot"})
-		if err != nil {
-			return err
-		}
-
-		if result == "mysqld is alive" {
-			break
-		}
-
-		if time.Now().After(deadline) {
-			return fmt.Errorf("timed out waiting for container to start")
-		}
-		time.Sleep(interval)
-	}
-
 	return nil
 }
 
@@ -194,6 +174,28 @@ func (d *DockerManager) ExecAttachContainer(ctx context.Context, id string, cmd 
 	}
 
 	return strings.TrimSpace(buf.String()), nil
+}
+
+func (d *DockerManager) WaitContainerUp(ctx context.Context, id string, expected string, cmd []string) error {
+	maxWait := 10 * time.Second
+	interval := 1 * time.Second
+	deadline := time.Now().Add(maxWait)
+	for {
+		result, err := d.ExecAttachContainer(ctx, id, cmd)
+		if err != nil {
+			return err
+		}
+
+		if result == expected {
+			break
+		}
+
+		if time.Now().After(deadline) {
+			return fmt.Errorf("timed out waiting for container to start %s", expected)
+		}
+		time.Sleep(interval)
+	}
+	return nil
 }
 
 func (d *DockerManager) StopContainer(ctx context.Context, id string) error {

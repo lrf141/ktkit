@@ -1,19 +1,23 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"github.com/lrf141/ktkit/kt-sandbox/pkg"
 
 	"github.com/spf13/cobra"
 )
 
 const (
-	InstancePrefixName = "kt-"
+	InstancePrefixName = "kt"
 )
 
 var replicationConfig struct {
-	clusterName string
-	instances   int
-	isSemiSync  bool
+	clusterName     string
+	instances       int
+	isSemiSync      bool
+	imageRepository string
+	imageTag        string
 }
 
 var replicationCmd = &cobra.Command{
@@ -26,9 +30,22 @@ var replicationCmd = &cobra.Command{
 		}
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("replication called")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runReplication(cmd, args)
 	},
+}
+
+func runReplication(cmd *cobra.Command, args []string) error {
+	ctx := context.Background()
+	manager, err := pkg.NewMySQLManager(replicationConfig.imageRepository, replicationConfig.imageTag, replicationConfig.instances)
+	if err != nil {
+		return err
+	}
+	err = manager.CreateInstances(ctx, replicationConfig.clusterName)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func init() {
@@ -36,5 +53,7 @@ func init() {
 	replicationFlags.StringVarP(&replicationConfig.clusterName, "name", "n", "", "replication cluster name")
 	replicationFlags.IntVarP(&replicationConfig.instances, "instances", "i", 1, "replication instances. 1 source, N replicas.")
 	replicationFlags.BoolVarP(&replicationConfig.isSemiSync, "semiSync", "s", false, "Configure semi-synchronous replication")
+	replicationFlags.StringVarP(&replicationConfig.imageRepository, "image-repository", "r", pkg.DefaultImageRepository, "Image repository")
+	replicationFlags.StringVarP(&replicationConfig.imageTag, "image-tag", "t", pkg.DefaultImageTag, "Image tag")
 	rootCmd.AddCommand(replicationCmd)
 }
