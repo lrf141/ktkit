@@ -39,9 +39,11 @@ var _ = Describe("MySQL", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(sut.Source().Name()).To(Equal("kt-test-0"))
 		Expect(sut.Source().ContainerId()).NotTo(BeEmpty())
+		Expect(sut.Source().Port()).To(Equal(33060))
 		for index, replica := range sut.Replicas() {
 			Expect(replica.Name()).To(Equal(fmt.Sprintf("kt-test-%d", index+1)))
 			Expect(replica.ContainerId()).NotTo(BeEmpty())
+			Expect(replica.Port()).To(Equal(pkg.BasePort + index + 1))
 		}
 	})
 

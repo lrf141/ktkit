@@ -3,12 +3,16 @@ package pkg
 import (
 	"context"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 	"time"
 )
 
 const (
 	InstancePrefixName = "kt"
 	MySQLActiveStatus  = "mysqld is alive"
+	BasePort           = 33060
+	MySQLDSNFormat     = "root:root@tcp(0.0.0.0:%d)/?parseTime=true&charset=utf8mb4"
 )
 
 type MySQLManager struct {
@@ -22,6 +26,8 @@ type MySQLManager struct {
 type Instance struct {
 	name        string
 	containerId string
+	port        int
+	db          *sqlx.DB
 }
 
 func (i *Instance) Name() string {
@@ -30,6 +36,10 @@ func (i *Instance) Name() string {
 
 func (i *Instance) ContainerId() string {
 	return i.containerId
+}
+
+func (i *Instance) Port() int {
+	return i.port
 }
 
 func NewMySQLManager(repository string, tag string, count int) (*MySQLManager, error) {
@@ -51,15 +61,34 @@ func (m *MySQLManager) CreateInstance(ctx context.Context, name string, index in
 	if err != nil {
 		return &Instance{}, err
 	}
-	instance := &Instance{
-		name:        instanceName,
-		containerId: containerId,
-	}
+	port := BasePort + index
 	err = m.docker.StartContainer(ctx, containerId)
 	if err != nil {
 		return nil, err
 	}
-	return instance, nil
+
+	err = m.WaitStartUp(ctx, containerId)
+	if err != nil {
+		return nil, err
+	}
+
+	dsn := fmt.Sprintf(MySQLDSNFormat, port)
+	db, err := sqlx.Open("mysql", dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Instance{
+		name:        instanceName,
+		containerId: containerId,
+		port:        port,
+		db:          db,
+	}, nil
 }
 
 func (m *MySQLManager) WaitStartUp(ctx context.Context, containerId string) error {
@@ -101,19 +130,11 @@ func (m *MySQLManager) CreateInstances(ctx context.Context, name string) error {
 	if err != nil {
 		return err
 	}
-	err = m.WaitStartUp(ctx, source.ContainerId())
-	if err != nil {
-		return err
-	}
 	m.source = source
 
 	// create replica instances
 	for i := 1; i <= m.count; i++ {
 		replica, err := m.CreateInstance(ctx, name, i)
-		if err != nil {
-			return err
-		}
-		err = m.WaitStartUp(ctx, replica.ContainerId())
 		if err != nil {
 			return err
 		}

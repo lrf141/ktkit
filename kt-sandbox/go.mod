@@ -5,12 +5,15 @@ go 1.24.0
 require (
 	github.com/docker/docker v28.3.3+incompatible
 	github.com/docker/go-connections v0.6.0
+	github.com/go-sql-driver/mysql v1.9.3
+	github.com/jmoiron/sqlx v1.4.0
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.38.1
 	github.com/spf13/cobra v1.9.1
 )
 
 require (
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/Microsoft/go-winio v0.4.21 // indirect
 	github.com/containerd/errdefs v1.0.0 // indirect
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
