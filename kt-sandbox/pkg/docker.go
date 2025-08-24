@@ -170,8 +170,6 @@ func (d *DockerManager) CreateNetwork(ctx context.Context) (string, error) {
 	return n.ID, nil
 }
 
-// ExecAttachContainer
-// []string{"/bin/sh", "-c", "mysqladmin", "ping", "-u", "root", "-p", "root"},
 func (d *DockerManager) ExecAttachContainer(ctx context.Context, id string, cmd []string) (string, error) {
 	resp, err := d.client.ContainerExecCreate(ctx, id, container.ExecOptions{
 		Cmd:          cmd,
