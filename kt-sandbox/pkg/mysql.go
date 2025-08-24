@@ -12,7 +12,7 @@ const (
 	InstancePrefixName = "kt"
 	MySQLActiveStatus  = "mysqld is alive"
 	BasePort           = 33060
-	MySQLDSNFormat     = "root:root@tcp(0.0.0.0:%d)/?parseTime=true&charset=utf8mb4"
+	MySQLDSNFormat     = "root:root@tcp(0.0.0.0:%d)/test?parseTime=true&charset=utf8mb4"
 )
 
 type MySQLManager struct {
@@ -40,6 +40,15 @@ func (i *Instance) ContainerId() string {
 
 func (i *Instance) Port() int {
 	return i.port
+}
+
+func (i *Instance) CreateReplUser(ctx context.Context) error {
+	_, err := i.db.ExecContext(ctx, "CREATE USER IF NOT EXISTS 'repl'@'%' IDENTIFIED BY 'repl';")
+	if err != nil {
+		return err
+	}
+	_, err = i.db.ExecContext(ctx, "GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%'")
+	return err
 }
 
 func NewMySQLManager(repository string, tag string, count int) (*MySQLManager, error) {
@@ -150,6 +159,28 @@ func (m *MySQLManager) Source() *Instance {
 
 func (m *MySQLManager) Replicas() []*Instance {
 	return m.replicas
+}
+
+func (m *MySQLManager) CreateReplUser(ctx context.Context) error {
+	err := m.source.CreateReplUser(ctx)
+	if err != nil {
+		return err
+	}
+	for _, replica := range m.replicas {
+		err = replica.CreateReplUser(ctx)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m *MySQLManager) SetupReplication(ctx context.Context, isSemiSync bool) error {
+	err := m.CreateReplUser(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (m *MySQLManager) CleanupAll(ctx context.Context) error {

@@ -99,6 +99,7 @@ func (d *DockerManager) CreateContainer(ctx context.Context, name string, index 
 		Tty:   true,
 		Env: []string{
 			"MYSQL_ROOT_PASSWORD=root",
+			"MYSQL_DATABASE=test",
 		},
 	}
 	hostConfig := &container.HostConfig{

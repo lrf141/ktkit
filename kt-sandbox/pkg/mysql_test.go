@@ -47,6 +47,11 @@ var _ = Describe("MySQL", func() {
 		}
 	})
 
+	It("Setup Async Replication", func() {
+		err := sut.SetupReplication(ctx, false)
+		Expect(err).NotTo(HaveOccurred())
+	})
+
 	It("Cleanup", func() {
 		// Exercise
 		err := sut.CleanupAll(ctx)
