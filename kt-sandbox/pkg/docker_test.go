@@ -33,7 +33,8 @@ var _ = Describe("Docker suite", func() {
 	})
 
 	BeforeEach(func() {
-		manager, err := pkg.NewDockerManager(pkg.DefaultImageRepository, testContainerTag)
+		imageConfig := pkg.NewImageConfig(pkg.DefaultImageRepository, testContainerTag)
+		manager, err := pkg.NewDockerManager(imageConfig)
 		if err != nil {
 			fmt.Printf("Failed to setup pkg test: %v", err)
 			os.Exit(1)

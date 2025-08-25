@@ -45,8 +45,7 @@ type DockerManager struct {
 	imageConfig *ImageConfig
 }
 
-func NewDockerManager(repository string, tag string) (*DockerManager, error) {
-	imageConfig := NewImageConfig(repository, tag)
+func NewDockerManager(imageConfig *ImageConfig) (*DockerManager, error) {
 	apiClient, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return nil, err
