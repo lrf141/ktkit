@@ -43,7 +43,6 @@ func (c *ImageConfig) ImageUri() string {
 type DockerManager struct {
 	client      *client.Client
 	imageConfig *ImageConfig
-	network     *network.NetworkingConfig
 }
 
 func NewDockerManager(repository string, tag string) (*DockerManager, error) {
