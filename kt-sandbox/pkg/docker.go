@@ -41,19 +41,19 @@ func (c *ImageConfig) ImageUri() string {
 }
 
 type DockerManager struct {
-	client      *client.Client
-	imageConfig *ImageConfig
+	client *client.Client
+	image  Image
 }
 
-func NewDockerManager(imageConfig *ImageConfig) (*DockerManager, error) {
+func NewDockerManager(image Image) (*DockerManager, error) {
 	apiClient, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return nil, err
 	}
 
 	return &DockerManager{
-		client:      apiClient,
-		imageConfig: imageConfig,
+		client: apiClient,
+		image:  image,
 	}, nil
 }
 
@@ -64,7 +64,7 @@ func (d *DockerManager) ExistImage(ctx context.Context) (bool, error) {
 	}
 	for _, i := range images {
 		for _, imageTag := range i.RepoTags {
-			if imageTag == d.imageConfig.ImageUri() {
+			if imageTag == d.image.Reference() {
 				return true, nil
 			}
 		}
@@ -78,11 +78,11 @@ func (d *DockerManager) PullImage(ctx context.Context) error {
 		return err
 	}
 	if existImage {
-		fmt.Printf("Already pulled image %s\n", d.imageConfig.ImageUri())
+		fmt.Printf("Already pulled image %s\n", d.image.Reference())
 		return nil
 	}
 
-	reader, err := d.client.ImagePull(ctx, d.imageConfig.ImageUri(), image.PullOptions{})
+	reader, err := d.client.ImagePull(ctx, d.image.Reference(), image.PullOptions{})
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func (d *DockerManager) PullImage(ctx context.Context) error {
 
 func (d *DockerManager) CreateContainer(ctx context.Context, name string, index int, networkId string) (string, error) {
 	config := &container.Config{
-		Image: d.imageConfig.ImageUri(),
+		Image: d.image.Reference(),
 		Tty:   true,
 		Env: []string{
 			"MYSQL_ROOT_PASSWORD=root",

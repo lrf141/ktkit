@@ -52,7 +52,7 @@ func (i *Instance) CreateReplUser(ctx context.Context) error {
 }
 
 func NewMySQLManager(repository string, tag string, count int) (*MySQLManager, error) {
-	image := NewImageConfig(repository, tag)
+	image := NewDockerImage(repository, tag)
 	docker, err := NewDockerManager(image)
 	if err != nil {
 		return nil, err

@@ -14,6 +14,13 @@ const (
 	testContainerTag = "8.4.6-test"
 )
 
+type mockDockerImage struct {
+}
+
+func (d *mockDockerImage) Reference() string {
+	return "mysql:" + testContainerTag
+}
+
 var _ = Describe("Docker suite", func() {
 
 	var sut *pkg.DockerManager
@@ -33,8 +40,7 @@ var _ = Describe("Docker suite", func() {
 	})
 
 	BeforeEach(func() {
-		imageConfig := pkg.NewImageConfig(pkg.DefaultImageRepository, testContainerTag)
-		manager, err := pkg.NewDockerManager(imageConfig)
+		manager, err := pkg.NewDockerManager(&mockDockerImage{})
 		if err != nil {
 			fmt.Printf("Failed to setup pkg test: %v", err)
 			os.Exit(1)
