@@ -18,6 +18,7 @@ var replicationConfig struct {
 	isSemiSync      bool
 	imageRepository string
 	imageTag        string
+	mycnfPath       string
 }
 
 var replicationCmd = &cobra.Command{
@@ -55,5 +56,6 @@ func init() {
 	replicationFlags.BoolVarP(&replicationConfig.isSemiSync, "semiSync", "s", false, "Configure semi-synchronous replication")
 	replicationFlags.StringVarP(&replicationConfig.imageRepository, "image-repository", "r", pkg.DefaultImageRepository, "Image repository")
 	replicationFlags.StringVarP(&replicationConfig.imageTag, "image-tag", "t", pkg.DefaultImageTag, "Image tag")
+	replicationFlags.StringVarP(&replicationConfig.mycnfPath, "mycnf", "c", "resources/", "Base path of my.cnf.")
 	rootCmd.AddCommand(replicationCmd)
 }
