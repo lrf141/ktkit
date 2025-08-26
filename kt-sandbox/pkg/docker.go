@@ -24,25 +24,10 @@ const (
 	InternalNetworkIpAddrFormat = "172.30.0.%d"
 )
 
-type ImageConfig struct {
-	repository string
-	tag        string
-}
-
-func NewImageConfig(repository string, tag string) *ImageConfig {
-	return &ImageConfig{
-		repository: repository,
-		tag:        tag,
-	}
-}
-
-func (c *ImageConfig) ImageUri() string {
-	return c.repository + ":" + c.tag
-}
-
 type DockerManager struct {
-	client *client.Client
-	image  Image
+	client    *client.Client
+	image     Image
+	networkId string
 }
 
 func NewDockerManager(image Image) (*DockerManager, error) {
@@ -146,6 +131,7 @@ func (d *DockerManager) CreateNetwork(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	d.networkId = n.ID
 	return n.ID, nil
 }
 
