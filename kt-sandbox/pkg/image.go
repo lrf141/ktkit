@@ -7,8 +7,10 @@ type Image interface {
 }
 
 type DockerImage struct {
+	registry   string // unused
 	repository string
 	tag        string
+	digest     string // unused
 }
 
 func NewDockerImage(repository, tag string) *DockerImage {
