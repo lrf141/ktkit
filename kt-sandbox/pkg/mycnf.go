@@ -16,7 +16,7 @@ enforce-gtid-consistency=ON
 `
 	SemiSyncReplicationSourceTemplate = `
 loose_repl_semi_sync_master_enable=1
-loose_repl_semi_sync_master_timeout=%d
+loose_repl_semi_sync_master_timeout=10000
 `
 	SemiSyncReplicationReplicaTemplate = `
 loose_rpl_semi_sync_slave_enabled=1
@@ -24,54 +24,80 @@ loose_rpl_semi_sync_slave_enabled=1
 )
 
 const (
-	DefaultSemiSyncMasterTimeout = 10000
-	SourceDirName                = "source"
-	ReplicaDirNameFormat         = "replica-%d"
-	MyCnfName                    = "my.cnf"
+	SourceDirName        = "source"
+	ReplicaDirNameFormat = "replica-%d"
+	MyCnfName            = "my.cnf"
 )
 
 type MyCnf struct {
 	path       string
-	instance   int
+	index      int // if index is 0, it is source instance
 	isSemiSync bool
 }
 
-func NewMyCnf(basePath string, instance int, isSemiSync bool) *MyCnf {
+func NewMyCnf(basePath string, index int, isSemiSync bool) *MyCnf {
 	return &MyCnf{
 		path:       basePath,
-		instance:   instance,
+		index:      index,
 		isSemiSync: isSemiSync,
 	}
 }
 
-func (m *MyCnf) GenerateReplicationMyCnf() error {
-	for i := 0; i < m.instance; i++ {
-		myCnfBody := fmt.Sprintf(AsyncReplicationMyCnfTemplate, i+1)
-		if i == 0 && m.isSemiSync {
-			myCnfBody = myCnfBody + fmt.Sprintf(SemiSyncReplicationSourceTemplate, DefaultSemiSyncMasterTimeout)
-		}
-		if i != 0 && m.isSemiSync {
-			myCnfBody = myCnfBody + fmt.Sprintf(SemiSyncReplicationReplicaTemplate)
-		}
+func NewAsyncReplMyCnf(basePath string, index int) *MyCnf {
+	return &MyCnf{
+		path:       basePath,
+		index:      index,
+		isSemiSync: false,
+	}
+}
 
-		var dstPath string
-		if i == 0 {
-			dstPath = filepath.Join(m.path, fmt.Sprintf(SourceDirName))
-		} else {
-			dstPath = filepath.Join(m.path, fmt.Sprintf(ReplicaDirNameFormat, i))
-		}
+func NewSemiSyncReplMyCnf(basePath string, index int) *MyCnf {
+	return &MyCnf{
+		path:       basePath,
+		index:      index,
+		isSemiSync: true,
+	}
+}
 
-		if _, err := os.Stat(dstPath); err != nil {
-			err := os.MkdirAll(dstPath, 0777)
-			if err != nil {
-				return err
-			}
-		}
+func (m *MyCnf) GenerateReplicationConfig() error {
+	if m.index == 0 {
+		return m.GenerateSourceConfig()
+	}
+	return m.GenerateReplicaConfig()
+}
 
-		err := os.WriteFile(filepath.Join(dstPath, MyCnfName), []byte(myCnfBody), 0777)
+func (m *MyCnf) GenerateSourceConfig() error {
+	return m.GenerateReplicationConfigWithTmpl(AsyncReplicationMyCnfTemplate, SemiSyncReplicationSourceTemplate)
+}
+
+func (m *MyCnf) GenerateReplicaConfig() error {
+	return m.GenerateReplicationConfigWithTmpl(AsyncReplicationMyCnfTemplate, SemiSyncReplicationReplicaTemplate)
+}
+
+// GenerateReplicationConfigWithTmpl
+// asyncTmpl includes server_id=%d in the first line of my.cnf
+func (m *MyCnf) GenerateReplicationConfigWithTmpl(asyncTmpl string, semiSyncTmpl string) error {
+	myCnfBody := fmt.Sprintf(asyncTmpl, m.index+1)
+	if m.isSemiSync {
+		myCnfBody += semiSyncTmpl
+	}
+
+	dirName := SourceDirName
+	if m.index > 0 {
+		dirName = fmt.Sprintf(ReplicaDirNameFormat, m.index)
+	}
+
+	confPath := filepath.Join(m.path, dirName)
+	if _, err := os.Stat(confPath); err != nil {
+		err := os.MkdirAll(confPath, 0777)
 		if err != nil {
 			return err
 		}
+	}
+
+	err := os.WriteFile(filepath.Join(confPath, MyCnfName), []byte(myCnfBody), 0777)
+	if err != nil {
+		return err
 	}
 	return nil
 }
