@@ -1,0 +1,8 @@
+version: 2.0.0
+registries:
+  - type: standard
+    ref: v4.156.0
+packages:
+  - name: helm/helm@v3.14.4
+  - name: kubernetes/kubectl@v1.33.1
+  - name: kubernetes-sigs/kind@v0.20.0
